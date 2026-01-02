@@ -8,11 +8,11 @@
 		"dev": "go run cmd/cli/main.go",
 		"format": "gofmt -l .",
 		"format:fix": "gofmt -w",
-		"postinstall": "/bin/sh -c ./scripts/postinstall.sh",
 		"lint": "golangci-lint run",
 		"lint:fix": "golangci-lint run --fix",
-    "test": "go test -v -shuffle=on ./...",
-		"vet": "go vet"
+		"test": "go test -v -shuffle=on ./...",
+		"vet": "go vet",
+		"ci:local": "act"
 	},
 	"keywords": [],
 	"author": "",
