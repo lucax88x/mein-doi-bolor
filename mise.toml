@@ -2,3 +2,5 @@
 golang = "1.25.5"
 golangci-lint = "2.7.2"
 act = "0.2.84"
+lefthook = "2.0.13"
+pnpm = "10.27.0"
