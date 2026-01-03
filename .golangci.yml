@@ -9,6 +9,12 @@ linters:
   # - `fast`: enables only linters considered as "fast" (`golangci-lint help linters --json | jq '[ .[] | select(.fast==true) ] | map(.name)'`).
   # Default: standard
   default: fast
+  settings:
+    mnd:
+      ignored-numbers:
+        - "8"
+  disable:
+    - depguard
 formatters:
   # Enable specific formatter.
   # Default: [] (uses standard Go formatting)

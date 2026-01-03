@@ -1,3 +1,4 @@
+//nolint:testpackage // testing internals
 package gb
 
 import (
@@ -49,7 +50,6 @@ func TestCPU_8BitRegisters_DefaultToZero(t *testing.T) {
 	//
 	// Note: We'll test post-boot values separately. This test ensures
 	// the zero value of your struct is sensible.
-
 	cpu := newCPU()
 
 	// For now, we test that registers can be read.
@@ -67,11 +67,11 @@ func TestCPU_8BitRegisters_DefaultToZero(t *testing.T) {
 	_ = cpu.L()
 }
 
+//nolint:funlen
 func TestCPU_8BitRegisters_CanBeWrittenAndRead(t *testing.T) {
 	// Each register should support get/set operations.
 	// Use table-driven tests - an idiomatic Go pattern that makes
 	// it easy to add test cases and see which specific case failed.
-
 	testCases := []struct {
 		name     string
 		setValue uint8
@@ -82,43 +82,43 @@ func TestCPU_8BitRegisters_CanBeWrittenAndRead(t *testing.T) {
 			name:     "Register A (Accumulator)",
 			setValue: 0x42,
 			getter:   func(c *cpu) uint8 { return c.A() },
-			setter:   func(c *cpu, v uint8) { c.setA(v) },
+			setter:   func(c *cpu, v uint8) { c.SetA(v) },
 		},
 		{
 			name:     "Register B",
 			setValue: 0x12,
 			getter:   func(c *cpu) uint8 { return c.B() },
-			setter:   func(c *cpu, v uint8) { c.setB(v) },
+			setter:   func(c *cpu, v uint8) { c.SetB(v) },
 		},
 		{
 			name:     "Register C",
 			setValue: 0x34,
 			getter:   func(c *cpu) uint8 { return c.C() },
-			setter:   func(c *cpu, v uint8) { c.setC(v) },
+			setter:   func(c *cpu, v uint8) { c.SetC(v) },
 		},
 		{
 			name:     "Register D",
 			setValue: 0x56,
 			getter:   func(c *cpu) uint8 { return c.D() },
-			setter:   func(c *cpu, v uint8) { c.setD(v) },
+			setter:   func(c *cpu, v uint8) { c.SetD(v) },
 		},
 		{
 			name:     "Register E",
 			setValue: 0x78,
 			getter:   func(c *cpu) uint8 { return c.E() },
-			setter:   func(c *cpu, v uint8) { c.setE(v) },
+			setter:   func(c *cpu, v uint8) { c.SetE(v) },
 		},
 		{
 			name:     "Register H",
 			setValue: 0x9A,
 			getter:   func(c *cpu) uint8 { return c.H() },
-			setter:   func(c *cpu, v uint8) { c.setH(v) },
+			setter:   func(c *cpu, v uint8) { c.SetH(v) },
 		},
 		{
 			name:     "Register L",
 			setValue: 0xBC,
 			getter:   func(c *cpu) uint8 { return c.L() },
-			setter:   func(c *cpu, v uint8) { c.setL(v) },
+			setter:   func(c *cpu, v uint8) { c.SetL(v) },
 		},
 	}
 
@@ -154,13 +154,13 @@ func TestCPU_16BitRegisters_CanBeWrittenAndRead(t *testing.T) {
 			name:     "Stack Pointer (SP)",
 			setValue: 0xFFFE,
 			getter:   func(c *cpu) uint16 { return c.SP() },
-			setter:   func(c *cpu, v uint16) { c.setSP(v) },
+			setter:   func(c *cpu, v uint16) { c.SetSP(v) },
 		},
 		{
 			name:     "Program Counter (PC)",
 			setValue: 0x0100,
 			getter:   func(c *cpu) uint16 { return c.PC() },
-			setter:   func(c *cpu, v uint16) { c.setPC(v) },
+			setter:   func(c *cpu, v uint16) { c.SetPC(v) },
 		},
 	}
 
@@ -196,7 +196,6 @@ func TestCPU_16BitRegisters_CanBeWrittenAndRead(t *testing.T) {
 func TestCPU_RegisterPairs_CombineHighAndLowBytes(t *testing.T) {
 	// When we set individual 8-bit registers, reading the 16-bit pair
 	// should return them combined correctly.
-
 	testCases := []struct {
 		name      string
 		highValue uint8
@@ -209,24 +208,24 @@ func TestCPU_RegisterPairs_CombineHighAndLowBytes(t *testing.T) {
 			name:      "BC pair",
 			highValue: 0x12,
 			lowValue:  0x34,
-			setHigh:   func(c *cpu, v uint8) { c.setB(v) },
-			setLow:    func(c *cpu, v uint8) { c.setC(v) },
+			setHigh:   func(c *cpu, v uint8) { c.SetB(v) },
+			setLow:    func(c *cpu, v uint8) { c.SetC(v) },
 			getPair:   func(c *cpu) uint16 { return c.BC() },
 		},
 		{
 			name:      "DE pair",
 			highValue: 0x56,
 			lowValue:  0x78,
-			setHigh:   func(c *cpu, v uint8) { c.setD(v) },
-			setLow:    func(c *cpu, v uint8) { c.setE(v) },
+			setHigh:   func(c *cpu, v uint8) { c.SetD(v) },
+			setLow:    func(c *cpu, v uint8) { c.SetE(v) },
 			getPair:   func(c *cpu) uint16 { return c.DE() },
 		},
 		{
 			name:      "HL pair",
 			highValue: 0x9A,
 			lowValue:  0xBC,
-			setHigh:   func(c *cpu, v uint8) { c.setH(v) },
-			setLow:    func(c *cpu, v uint8) { c.setL(v) },
+			setHigh:   func(c *cpu, v uint8) { c.SetH(v) },
+			setLow:    func(c *cpu, v uint8) { c.SetL(v) },
 			getPair:   func(c *cpu) uint16 { return c.HL() },
 		},
 	}
@@ -251,7 +250,6 @@ func TestCPU_RegisterPairs_CombineHighAndLowBytes(t *testing.T) {
 func TestCPU_RegisterPairs_setAffectsBothBytes(t *testing.T) {
 	// When we set a 16-bit pair, both constituent 8-bit registers
 	// should be updated.
-
 	testCases := []struct {
 		name         string
 		pairValue    uint16
@@ -266,7 +264,7 @@ func TestCPU_RegisterPairs_setAffectsBothBytes(t *testing.T) {
 			pairValue:    0xABCD,
 			expectedHigh: 0xAB,
 			expectedLow:  0xCD,
-			setPair:      func(c *cpu, v uint16) { c.setBC(v) },
+			setPair:      func(c *cpu, v uint16) { c.SetBC(v) },
 			getHigh:      func(c *cpu) uint8 { return c.B() },
 			getLow:       func(c *cpu) uint8 { return c.C() },
 		},
@@ -275,7 +273,7 @@ func TestCPU_RegisterPairs_setAffectsBothBytes(t *testing.T) {
 			pairValue:    0x1234,
 			expectedHigh: 0x12,
 			expectedLow:  0x34,
-			setPair:      func(c *cpu, v uint16) { c.setDE(v) },
+			setPair:      func(c *cpu, v uint16) { c.SetDE(v) },
 			getHigh:      func(c *cpu) uint8 { return c.D() },
 			getLow:       func(c *cpu) uint8 { return c.E() },
 		},
@@ -284,7 +282,7 @@ func TestCPU_RegisterPairs_setAffectsBothBytes(t *testing.T) {
 			pairValue:    0xFEDC,
 			expectedHigh: 0xFE,
 			expectedLow:  0xDC,
-			setPair:      func(c *cpu, v uint16) { c.setHL(v) },
+			setPair:      func(c *cpu, v uint16) { c.SetHL(v) },
 			getHigh:      func(c *cpu) uint8 { return c.H() },
 			getLow:       func(c *cpu) uint8 { return c.L() },
 		},
@@ -318,9 +316,9 @@ func TestCPU_RegisterPairs_setAffectsBothBytes(t *testing.T) {
 func TestCPU_AFPair_CombinesAAndF(t *testing.T) {
 	cpu := newCPU()
 
-	cpu.setA(0x12)
+	cpu.SetA(0x12)
 	// Note: F's lower 4 bits are always 0, so 0xEC becomes 0xE0
-	cpu.setF(0xEC)
+	cpu.SetF(0xEC)
 
 	expected := uint16(0x12E0)
 	got := cpu.AF()
@@ -334,7 +332,7 @@ func TestCPU_setAF_AffectsBothRegisters(t *testing.T) {
 
 	// When setting AF to 0xABCD, A should become 0xAB
 	// But F should become 0xC0 (not 0xCD!) because lower 4 bits are masked
-	cpu.setAF(0xABCD)
+	cpu.SetAF(0xABCD)
 
 	require.Equal(t, uint8(0xAB), cpu.A(), "A should be high byte of AF")
 	require.Equal(t, uint8(0xC0), cpu.F(),
@@ -360,11 +358,10 @@ func TestCPU_FRegister_LowerNibbleAlwaysZero(t *testing.T) {
 	// This is a critical hardware behavior: the lower 4 bits of F
 	// are hardwired to 0. No matter what value you try to write,
 	// those bits must remain 0.
-
 	cpu := newCPU()
 
 	// Try to set F to 0xFF (all bits set)
-	cpu.setF(0xFF)
+	cpu.SetF(0xFF)
 
 	// Only upper nibble should be set
 	require.Equal(t, uint8(0xF0), cpu.F(),
@@ -373,7 +370,6 @@ func TestCPU_FRegister_LowerNibbleAlwaysZero(t *testing.T) {
 
 func TestCPU_FRegister_MasksOnEveryWrite(t *testing.T) {
 	// Test multiple values to ensure masking is consistent
-
 	testCases := []struct {
 		input    uint8
 		expected uint8
@@ -391,7 +387,7 @@ func TestCPU_FRegister_MasksOnEveryWrite(t *testing.T) {
 			"input_"+formatHex(tc.input),
 			func(t *testing.T) {
 				cpu := newCPU()
-				cpu.setF(tc.input)
+				cpu.SetF(tc.input)
 
 				require.Equal(t, tc.expected, cpu.F(),
 					"setF(0x%02X) should result in F=0x%02X", tc.input, tc.expected)
@@ -409,20 +405,19 @@ func TestCPU_FRegister_MasksOnEveryWrite(t *testing.T) {
 func TestCPU_ZeroFlag_GetAndset(t *testing.T) {
 	// The Zero flag (Z) is set when an operation results in zero.
 	// It's bit 7 of the F register (0x80).
-
 	cpu := newCPU()
 
 	// Initially should be false (assuming F starts at 0)
-	cpu.setF(0x00)
+	cpu.SetF(0x00)
 	require.False(t, cpu.FlagZ(), "Z flag should be false when bit 7 is 0")
 
 	// set the Z flag
-	cpu.setFlagZ(true)
+	cpu.SetFlagZ(true)
 	require.True(t, cpu.FlagZ(), "Z flag should be true after setFlagZ(true)")
 	require.Equal(t, uint8(0x80), cpu.F()&0x80, "Bit 7 should be set")
 
 	// Clear the Z flag
-	cpu.setFlagZ(false)
+	cpu.SetFlagZ(false)
 	require.False(t, cpu.FlagZ(), "Z flag should be false after setFlagZ(false)")
 	require.Equal(t, uint8(0x00), cpu.F()&0x80, "Bit 7 should be cleared")
 }
@@ -613,10 +608,10 @@ func TestCPU_ZeroFlag_GetAndset(t *testing.T) {
 //		cpu := newCPU()
 //
 //		// Test 8-bit boundaries
-//		cpu.setA(0x00)
+//		cpu.SetA(0x00)
 //		require.Equal(t, uint8(0x00), cpu.A(), "A should handle 0x00")
 //
-//		cpu.setA(0xFF)
+//		cpu.SetA(0xFF)
 //		require.Equal(t, uint8(0xFF), cpu.A(), "A should handle 0xFF")
 //
 //		// Test 16-bit boundaries
@@ -637,11 +632,11 @@ func TestCPU_ZeroFlag_GetAndset(t *testing.T) {
 //		cpu := newCPU()
 //
 //		// Test BC at boundaries
-//		cpu.setBC(0x0000)
+//		cpu.SetBC(0x0000)
 //		require.Equal(t, uint8(0x00), cpu.B(), "B should be 0x00")
 //		require.Equal(t, uint8(0x00), cpu.C(), "C should be 0x00")
 //
-//		cpu.setBC(0xFFFF)
+//		cpu.SetBC(0xFFFF)
 //		require.Equal(t, uint8(0xFF), cpu.B(), "B should be 0xFF")
 //		require.Equal(t, uint8(0xFF), cpu.C(), "C should be 0xFF")
 //
@@ -673,7 +668,7 @@ func TestCPU_ZeroFlag_GetAndset(t *testing.T) {
 //				"input_"+formatHex16(tc.input),
 //				func(t *testing.T) {
 //					cpu := newCPU()
-//					cpu.setAF(tc.input)
+//					cpu.SetAF(tc.input)
 //
 //					require.Equal(t, tc.expectedAF, cpu.AF(),
 //						"AF should be 0x%04X after setAF(0x%04X)", tc.expectedAF, tc.input)
@@ -683,9 +678,10 @@ func TestCPU_ZeroFlag_GetAndset(t *testing.T) {
 //		}
 //	}
 
-// Helper to format 16-bit hex values for test names
+// Helper to format 16-bit hex values for test names.
 func formatHex16(v uint16) string {
 	const hexDigits = "0123456789ABCDEF"
+
 	return string([]byte{
 		hexDigits[(v>>12)&0xF],
 		hexDigits[(v>>8)&0xF],
@@ -694,8 +690,9 @@ func formatHex16(v uint16) string {
 	})
 }
 
-// Helper to format hex values for test names
+// Helper to format hex values for test names.
 func formatHex(v uint8) string {
 	const hexDigits = "0123456789ABCDEF"
+
 	return string([]byte{hexDigits[v>>4], hexDigits[v&0xF]})
 }
