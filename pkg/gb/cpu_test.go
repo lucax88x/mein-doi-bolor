@@ -422,261 +422,252 @@ func TestCPU_ZeroFlag_GetAndset(t *testing.T) {
 	require.Equal(t, uint8(0x00), cpu.F()&0x80, "Bit 7 should be cleared")
 }
 
-// func TestCPU_SubtractFlag_GetAndset(t *testing.T) {
-// 	// The Subtract flag (N) indicates if the last operation was a subtraction.
-// 	// Used for DAA (Decimal Adjust Accumulator) instruction.
-// 	// It's bit 6 of the F register (0x40).
-//
-// 	cpu := newCPU()
-//
-// 	cpu.setF(0x00)
-// 	require.False(t, cpu.FlagN(), "N flag should be false when bit 6 is 0")
-//
-// 	cpu.setFlagN(true)
-// 	require.True(t, cpu.FlagN(), "N flag should be true after setFlagN(true)")
-// 	require.Equal(t, uint8(0x40), cpu.F()&0x40, "Bit 6 should be set")
-//
-// 	cpu.setFlagN(false)
-// 	require.False(t, cpu.FlagN(), "N flag should be false after setFlagN(false)")
-// }
-//
-// func TestCPU_HalfCarryFlag_GetAndset(t *testing.T) {
-// 	// The Half Carry flag (H) is set when there's a carry from bit 3 to bit 4.
-// 	// Also used for DAA. It's bit 5 of the F register (0x20).
-// 	//
-// 	// This flag trips up many emulator developers! Pay attention to it
-// 	// when implementing arithmetic instructions.
-//
-// 	cpu := newCPU()
-//
-// 	cpu.setF(0x00)
-// 	require.False(t, cpu.FlagH(), "H flag should be false when bit 5 is 0")
-//
-// 	cpu.setFlagH(true)
-// 	require.True(t, cpu.FlagH(), "H flag should be true after setFlagH(true)")
-// 	require.Equal(t, uint8(0x20), cpu.F()&0x20, "Bit 5 should be set")
-//
-// 	cpu.setFlagH(false)
-// 	require.False(t, cpu.FlagH(), "H flag should be false after setFlagH(false)")
-// }
-//
-// func TestCPU_CarryFlag_GetAndset(t *testing.T) {
-// 	// The Carry flag (C) is set when an operation overflows/underflows.
-// 	// It's bit 4 of the F register (0x10).
-//
-// 	cpu := newCPU()
-//
-// 	cpu.setF(0x00)
-// 	require.False(t, cpu.FlagC(), "C flag should be false when bit 4 is 0")
-//
-// 	cpu.setFlagC(true)
-// 	require.True(t, cpu.FlagC(), "C flag should be true after setFlagC(true)")
-// 	require.Equal(t, uint8(0x10), cpu.F()&0x10, "Bit 4 should be set")
-//
-// 	cpu.setFlagC(false)
-// 	require.False(t, cpu.FlagC(), "C flag should be false after setFlagC(false)")
-// }
-//
-// func TestCPU_Flags_setOneDoesNotAffectOthers(t *testing.T) {
-// 	// setting one flag should not disturb the other flags.
-// 	// This tests that your bit manipulation is correct.
-//
-// 	cpu := newCPU()
-//
-// 	// Start with all flags clear
-// 	cpu.setF(0x00)
-//
-// 	// set each flag one by one
-// 	cpu.setFlagZ(true)
-// 	cpu.setFlagN(true)
-// 	cpu.setFlagH(true)
-// 	cpu.setFlagC(true)
-//
-// 	// All flags should now be set
-// 	require.True(t, cpu.FlagZ(), "Z should still be set")
-// 	require.True(t, cpu.FlagN(), "N should still be set")
-// 	require.True(t, cpu.FlagH(), "H should still be set")
-// 	require.True(t, cpu.FlagC(), "C should still be set")
-// 	require.Equal(t, uint8(0xF0), cpu.F(), "F should be 0xF0 with all flags set")
-//
-// 	// Now clear them one by one and verify others remain
-// 	cpu.setFlagZ(false)
-// 	require.False(t, cpu.FlagZ(), "Z should be cleared")
-// 	require.True(t, cpu.FlagN(), "N should remain set")
-// 	require.True(t, cpu.FlagH(), "H should remain set")
-// 	require.True(t, cpu.FlagC(), "C should remain set")
-//
-// 	cpu.setFlagN(false)
-// 	require.False(t, cpu.FlagN(), "N should be cleared")
-// 	require.True(t, cpu.FlagH(), "H should remain set")
-// 	require.True(t, cpu.FlagC(), "C should remain set")
-// }
+func TestCPU_SubtractFlag_GetAndset(t *testing.T) {
+	// The Subtract flag (N) indicates if the last operation was a subtraction.
+	// Used for DAA (Decimal Adjust Accumulator) instruction.
+	// It's bit 6 of the F register (0x40).
+	cpu := newCPU()
 
-// // =============================================================================
-// // POST-BOOT REGISTER VALUES
-// // =============================================================================
-// //
-// // After the boot ROM finishes executing, the CPU registers have specific
-// // values. Your NewCPU() constructor should initialize to these values
-// // so games can run without needing the boot ROM.
-// //
-// // Reference: Pan Docs - Power Up Sequence
-// // https://gbdev.io/pandocs/Power_Up_Sequence.html
-// //
-// // For original DMG (Game Boy):
-// //   A  = 0x01
-// //   F  = 0xB0 (Z=1, N=0, H=1, C=1)
-// //   B  = 0x00
-// //   C  = 0x13
-// //   D  = 0x00
-// //   E  = 0xD8
-// //   H  = 0x01
-// //   L  = 0x4D
-// //   SP = 0xFFFE
-// //   PC = 0x0100
+	cpu.SetF(0x00)
+	require.False(t, cpu.FlagN(), "N flag should be false when bit 6 is 0")
+
+	cpu.SetFlagN(true)
+	require.True(t, cpu.FlagN(), "N flag should be true after setFlagN(true)")
+	require.Equal(t, uint8(0x40), cpu.F()&0x40, "Bit 6 should be set")
+
+	cpu.SetFlagN(false)
+	require.False(t, cpu.FlagN(), "N flag should be false after setFlagN(false)")
+}
+
+func TestCPU_HalfCarryFlag_GetAndset(t *testing.T) {
+	// The Half Carry flag (H) is set when there's a carry from bit 3 to bit 4.
+	// Also used for DAA. It's bit 5 of the F register (0x20).
+	//
+	// This flag trips up many emulator developers! Pay attention to it
+	// when implementing arithmetic instructions.
+	cpu := newCPU()
+
+	cpu.SetF(0x00)
+	require.False(t, cpu.FlagH(), "H flag should be false when bit 5 is 0")
+
+	cpu.SetFlagH(true)
+	require.True(t, cpu.FlagH(), "H flag should be true after setFlagH(true)")
+	require.Equal(t, uint8(0x20), cpu.F()&0x20, "Bit 5 should be set")
+
+	cpu.SetFlagH(false)
+	require.False(t, cpu.FlagH(), "H flag should be false after setFlagH(false)")
+}
+
+func TestCPU_CarryFlag_GetAndset(t *testing.T) {
+	// The Carry flag (C) is set when an operation overflows/underflows.
+	// It's bit 4 of the F register (0x10).
+	cpu := newCPU()
+
+	cpu.SetF(0x00)
+	require.False(t, cpu.FlagC(), "C flag should be false when bit 4 is 0")
+
+	cpu.SetFlagC(true)
+	require.True(t, cpu.FlagC(), "C flag should be true after setFlagC(true)")
+	require.Equal(t, uint8(0x10), cpu.F()&0x10, "Bit 4 should be set")
+
+	cpu.SetFlagC(false)
+	require.False(t, cpu.FlagC(), "C flag should be false after setFlagC(false)")
+}
+
+func TestCPU_Flags_setOneDoesNotAffectOthers(t *testing.T) {
+	// setting one flag should not disturb the other flags.
+	// This tests that your bit manipulation is correct.
+	cpu := newCPU()
+
+	// Start with all flags clear
+	cpu.SetF(0x00)
+
+	// set each flag one by one
+	cpu.SetFlagZ(true)
+	cpu.SetFlagN(true)
+	cpu.SetFlagH(true)
+	cpu.SetFlagC(true)
+
+	// All flags should now be set
+	require.True(t, cpu.FlagZ(), "Z should still be set")
+	require.True(t, cpu.FlagN(), "N should still be set")
+	require.True(t, cpu.FlagH(), "H should still be set")
+	require.True(t, cpu.FlagC(), "C should still be set")
+	require.Equal(t, uint8(0xF0), cpu.F(), "F should be 0xF0 with all flags set")
+
+	// Now clear them one by one and verify others remain
+	cpu.SetFlagZ(false)
+	require.False(t, cpu.FlagZ(), "Z should be cleared")
+	require.True(t, cpu.FlagN(), "N should remain set")
+	require.True(t, cpu.FlagH(), "H should remain set")
+	require.True(t, cpu.FlagC(), "C should remain set")
+
+	cpu.SetFlagN(false)
+	require.False(t, cpu.FlagN(), "N should be cleared")
+	require.True(t, cpu.FlagH(), "H should remain set")
+	require.True(t, cpu.FlagC(), "C should remain set")
+}
+
+// =============================================================================
+// POST-BOOT REGISTER VALUES
+// =============================================================================
 //
-//	func TestNewCPU_PostBootValues_8BitRegisters(t *testing.T) {
-//		// These are the register values after the DMG boot ROM completes.
-//		// Games expect these values, so we initialize to them.
+// After the boot ROM finishes executing, the CPU registers have specific
+// values. Your NewCPU() constructor should initialize to these values
+// so games can run without needing the boot ROM.
 //
-//		cpu := newCPU()
+// Reference: Pan Docs - Power Up Sequence
+// https://gbdev.io/pandocs/Power_Up_Sequence.html
 //
-//		require.Equal(t, uint8(0x01), cpu.A(),
-//			"A should be 0x01 after boot (DMG)")
-//		require.Equal(t, uint8(0xB0), cpu.F(),
-//			"F should be 0xB0 after boot (Z=1, N=0, H=1, C=1)")
-//		require.Equal(t, uint8(0x00), cpu.B(),
-//			"B should be 0x00 after boot")
-//		require.Equal(t, uint8(0x13), cpu.C(),
-//			"C should be 0x13 after boot")
-//		require.Equal(t, uint8(0x00), cpu.D(),
-//			"D should be 0x00 after boot")
-//		require.Equal(t, uint8(0xD8), cpu.E(),
-//			"E should be 0xD8 after boot")
-//		require.Equal(t, uint8(0x01), cpu.H(),
-//			"H should be 0x01 after boot")
-//		require.Equal(t, uint8(0x4D), cpu.L(),
-//			"L should be 0x4D after boot")
-//	}
-//
-//	func TestNewCPU_PostBootValues_16BitRegisters(t *testing.T) {
-//		cpu := newCPU()
-//
-//		require.Equal(t, uint16(0xFFFE), cpu.SP(),
-//			"SP should be 0xFFFE after boot (top of HRAM)")
-//		require.Equal(t, uint16(0x0100), cpu.PC(),
-//			"PC should be 0x0100 after boot (cartridge entry point)")
-//	}
-//
-//	func TestNewCPU_PostBootValues_Flags(t *testing.T) {
-//		// Verify flags are set correctly based on F = 0xB0
-//		//   Z = 1 (bit 7 set)
-//		//   N = 0 (bit 6 clear)
-//		//   H = 1 (bit 5 set)
-//		//   C = 1 (bit 4 set)
-//
-//		cpu := newCPU()
-//
-//		require.True(t, cpu.FlagZ(), "Z flag should be set after boot")
-//		require.False(t, cpu.FlagN(), "N flag should be clear after boot")
-//		require.True(t, cpu.FlagH(), "H flag should be set after boot")
-//		require.True(t, cpu.FlagC(), "C flag should be set after boot")
-//	}
-//
-//	func TestNewCPU_PostBootValues_RegisterPairs(t *testing.T) {
-//		// Verify that register pairs reflect the combined individual values
-//
-//		cpu := newCPU()
-//
-//		require.Equal(t, uint16(0x01B0), cpu.AF(),
-//			"AF should be 0x01B0 after boot")
-//		require.Equal(t, uint16(0x0013), cpu.BC(),
-//			"BC should be 0x0013 after boot")
-//		require.Equal(t, uint16(0x00D8), cpu.DE(),
-//			"DE should be 0x00D8 after boot")
-//		require.Equal(t, uint16(0x014D), cpu.HL(),
-//			"HL should be 0x014D after boot")
-//	}
-//
-// // =============================================================================
-// // EDGE CASES AND BOUNDARY CONDITIONS
-// // =============================================================================
-//
-//	func TestCPU_Registers_HandleMinMaxValues(t *testing.T) {
-//		// Ensure registers handle the full 8-bit and 16-bit ranges
-//
-//		cpu := newCPU()
-//
-//		// Test 8-bit boundaries
-//		cpu.SetA(0x00)
-//		require.Equal(t, uint8(0x00), cpu.A(), "A should handle 0x00")
-//
-//		cpu.SetA(0xFF)
-//		require.Equal(t, uint8(0xFF), cpu.A(), "A should handle 0xFF")
-//
-//		// Test 16-bit boundaries
-//		cpu.setSP(0x0000)
-//		require.Equal(t, uint16(0x0000), cpu.SP(), "SP should handle 0x0000")
-//
-//		cpu.setSP(0xFFFF)
-//		require.Equal(t, uint16(0xFFFF), cpu.SP(), "SP should handle 0xFFFF")
-//
-//		cpu.setPC(0x0000)
-//		require.Equal(t, uint16(0x0000), cpu.PC(), "PC should handle 0x0000")
-//
-//		cpu.setPC(0xFFFF)
-//		require.Equal(t, uint16(0xFFFF), cpu.PC(), "PC should handle 0xFFFF")
-//	}
-//
-//	func TestCPU_RegisterPairs_HandleMinMaxValues(t *testing.T) {
-//		cpu := newCPU()
-//
-//		// Test BC at boundaries
-//		cpu.SetBC(0x0000)
-//		require.Equal(t, uint8(0x00), cpu.B(), "B should be 0x00")
-//		require.Equal(t, uint8(0x00), cpu.C(), "C should be 0x00")
-//
-//		cpu.SetBC(0xFFFF)
-//		require.Equal(t, uint8(0xFF), cpu.B(), "B should be 0xFF")
-//		require.Equal(t, uint8(0xFF), cpu.C(), "C should be 0xFF")
-//
-//		// Test HL at boundaries (HL is heavily used for memory addressing)
-//		cpu.setHL(0x0000)
-//		require.Equal(t, uint16(0x0000), cpu.HL(), "HL should handle 0x0000")
-//
-//		cpu.setHL(0xFFFF)
-//		require.Equal(t, uint16(0xFFFF), cpu.HL(), "HL should handle 0xFFFF")
-//	}
-//
-//	func TestCPU_setAF_AlwaysMasksLowerNibbleOfF(t *testing.T) {
-//		// Even when setting via setAF, the lower nibble of F must be masked
-//
-//		testCases := []struct {
-//			input      uint16
-//			expectedAF uint16
-//			expectedF  uint8
-//		}{
-//			{0x01B0, 0x01B0, 0xB0}, // Normal case
-//			{0x01BF, 0x01B0, 0xB0}, // Lower nibble should be masked
-//			{0xFF0F, 0xFF00, 0x00}, // Only lower nibble set in F
-//			{0xFFFF, 0xFFF0, 0xF0}, // All bits set
-//			{0x0000, 0x0000, 0x00}, // All bits clear
-//		}
-//
-//		for _, tc := range testCases {
-//			t.Run(
-//				"input_"+formatHex16(tc.input),
-//				func(t *testing.T) {
-//					cpu := newCPU()
-//					cpu.SetAF(tc.input)
-//
-//					require.Equal(t, tc.expectedAF, cpu.AF(),
-//						"AF should be 0x%04X after setAF(0x%04X)", tc.expectedAF, tc.input)
-//					require.Equal(t, tc.expectedF, cpu.F(),
-//						"F should be 0x%02X after setAF(0x%04X)", tc.expectedF, tc.input)
-//				})
-//		}
-//	}
+// For original DMG (Game Boy):
+//   A  = 0x01
+//   F  = 0xB0 (Z=1, N=0, H=1, C=1)
+//   B  = 0x00
+//   C  = 0x13
+//   D  = 0x00
+//   E  = 0xD8
+//   H  = 0x01
+//   L  = 0x4D
+//   SP = 0xFFFE
+//   PC = 0x0100
+
+func TestNewCPU_PostBootValues_8BitRegisters(t *testing.T) {
+	// These are the register values after the DMG boot ROM completes.
+	// Games expect these values, so we initialize to them.
+	cpu := newCPU()
+
+	require.Equal(t, uint8(0x01), cpu.A(),
+		"A should be 0x01 after boot (DMG)")
+	require.Equal(t, uint8(0xB0), cpu.F(),
+		"F should be 0xB0 after boot (Z=1, N=0, H=1, C=1)")
+	require.Equal(t, uint8(0x00), cpu.B(),
+		"B should be 0x00 after boot")
+	require.Equal(t, uint8(0x13), cpu.C(),
+		"C should be 0x13 after boot")
+	require.Equal(t, uint8(0x00), cpu.D(),
+		"D should be 0x00 after boot")
+	require.Equal(t, uint8(0xD8), cpu.E(),
+		"E should be 0xD8 after boot")
+	require.Equal(t, uint8(0x01), cpu.H(),
+		"H should be 0x01 after boot")
+	require.Equal(t, uint8(0x4D), cpu.L(),
+		"L should be 0x4D after boot")
+}
+
+func TestNewCPU_PostBootValues_16BitRegisters(t *testing.T) {
+	cpu := newCPU()
+
+	require.Equal(t, uint16(0xFFFE), cpu.SP(),
+		"SP should be 0xFFFE after boot (top of HRAM)")
+	require.Equal(t, uint16(0x0100), cpu.PC(),
+		"PC should be 0x0100 after boot (cartridge entry point)")
+}
+
+func TestNewCPU_PostBootValues_Flags(t *testing.T) {
+	// Verify flags are set correctly based on F = 0xB0
+	//   Z = 1 (bit 7 set)
+	//   N = 0 (bit 6 clear)
+	//   H = 1 (bit 5 set)
+	//   C = 1 (bit 4 set)
+	cpu := newCPU()
+
+	require.True(t, cpu.FlagZ(), "Z flag should be set after boot")
+	require.False(t, cpu.FlagN(), "N flag should be clear after boot")
+	require.True(t, cpu.FlagH(), "H flag should be set after boot")
+	require.True(t, cpu.FlagC(), "C flag should be set after boot")
+}
+
+func TestNewCPU_PostBootValues_RegisterPairs(t *testing.T) {
+	// Verify that register pairs reflect the combined individual values
+	cpu := newCPU()
+
+	require.Equal(t, uint16(0x01B0), cpu.AF(),
+		"AF should be 0x01B0 after boot")
+	require.Equal(t, uint16(0x0013), cpu.BC(),
+		"BC should be 0x0013 after boot")
+	require.Equal(t, uint16(0x00D8), cpu.DE(),
+		"DE should be 0x00D8 after boot")
+	require.Equal(t, uint16(0x014D), cpu.HL(),
+		"HL should be 0x014D after boot")
+}
+
+// =============================================================================
+// EDGE CASES AND BOUNDARY CONDITIONS
+// =============================================================================
+
+func TestCPU_Registers_HandleMinMaxValues(t *testing.T) {
+	// Ensure registers handle the full 8-bit and 16-bit ranges
+	cpu := newCPU()
+
+	// Test 8-bit boundaries
+	cpu.SetA(0x00)
+	require.Equal(t, uint8(0x00), cpu.A(), "A should handle 0x00")
+
+	cpu.SetA(0xFF)
+	require.Equal(t, uint8(0xFF), cpu.A(), "A should handle 0xFF")
+
+	// Test 16-bit boundaries
+	cpu.SetSP(0x0000)
+	require.Equal(t, uint16(0x0000), cpu.SP(), "SP should handle 0x0000")
+
+	cpu.SetSP(0xFFFF)
+	require.Equal(t, uint16(0xFFFF), cpu.SP(), "SP should handle 0xFFFF")
+
+	cpu.SetPC(0x0000)
+	require.Equal(t, uint16(0x0000), cpu.PC(), "PC should handle 0x0000")
+
+	cpu.SetPC(0xFFFF)
+	require.Equal(t, uint16(0xFFFF), cpu.PC(), "PC should handle 0xFFFF")
+}
+
+func TestCPU_RegisterPairs_HandleMinMaxValues(t *testing.T) {
+	cpu := newCPU()
+
+	// Test BC at boundaries
+	cpu.SetBC(0x0000)
+	require.Equal(t, uint8(0x00), cpu.B(), "B should be 0x00")
+	require.Equal(t, uint8(0x00), cpu.C(), "C should be 0x00")
+
+	cpu.SetBC(0xFFFF)
+	require.Equal(t, uint8(0xFF), cpu.B(), "B should be 0xFF")
+	require.Equal(t, uint8(0xFF), cpu.C(), "C should be 0xFF")
+
+	// Test HL at boundaries (HL is heavily used for memory addressing)
+	cpu.SetHL(0x0000)
+	require.Equal(t, uint16(0x0000), cpu.HL(), "HL should handle 0x0000")
+
+	cpu.SetHL(0xFFFF)
+	require.Equal(t, uint16(0xFFFF), cpu.HL(), "HL should handle 0xFFFF")
+}
+
+func TestCPU_setAF_AlwaysMasksLowerNibbleOfF(t *testing.T) {
+	// Even when setting via setAF, the lower nibble of F must be masked
+	testCases := []struct {
+		input      uint16
+		expectedAF uint16
+		expectedF  uint8
+	}{
+		{0x01B0, 0x01B0, 0xB0}, // Normal case
+		{0x01BF, 0x01B0, 0xB0}, // Lower nibble should be masked
+		{0xFF0F, 0xFF00, 0x00}, // Only lower nibble set in F
+		{0xFFFF, 0xFFF0, 0xF0}, // All bits set
+		{0x0000, 0x0000, 0x00}, // All bits clear
+	}
+
+	for _, tc := range testCases {
+		t.Run(
+			"input_"+formatHex16(tc.input),
+			func(t *testing.T) {
+				cpu := newCPU()
+				cpu.SetAF(tc.input)
+
+				require.Equal(t, tc.expectedAF, cpu.AF(),
+					"AF should be 0x%04X after setAF(0x%04X)", tc.expectedAF, tc.input)
+				require.Equal(t, tc.expectedF, cpu.F(),
+					"F should be 0x%02X after setAF(0x%04X)", tc.expectedF, tc.input)
+			})
+	}
+}
 
 // Helper to format 16-bit hex values for test names.
 func formatHex16(v uint16) string {

@@ -2,10 +2,27 @@ package gb
 
 import "fmt"
 
+// Initial CPU register values after boot ROM (DMG).
+const (
+	initA  uint8  = 0x01
+	initF  uint8  = 0xB0
+	initB  uint8  = 0x00
+	initC  uint8  = 0x13
+	initD  uint8  = 0x00
+	initE  uint8  = 0xD8
+	initH  uint8  = 0x01
+	initL  uint8  = 0x4D
+	initSP uint16 = 0xFFFE
+	initPC uint16 = 0x0100
+)
+
 const (
 	lowByteMask = 0xFF // Mask for extracting the low byte of a 16-bit value
 	flagMask    = 0xF0 // F register lower 4 bits are always 0
 	flagZ       = 0x80 // Zero flag (bit 7)
+	flagN       = 0x40 // Subtract flag (bit 6)
+	flagH       = 0x20 // Half Carry flag (bit 5)
+	flagC       = 0x10 // Carry flag (bit 4)
 )
 
 type cpu struct {
@@ -23,7 +40,18 @@ type cpu struct {
 }
 
 func newCPU() *cpu {
-	return &cpu{}
+	return &cpu{
+		a:  initA,
+		f:  initF,
+		b:  initB,
+		c:  initC,
+		d:  initD,
+		e:  initE,
+		h:  initH,
+		l:  initL,
+		sp: initSP,
+		pc: initPC,
+	}
 }
 
 func (c *cpu) A() uint8 {
@@ -147,14 +175,42 @@ func (c *cpu) SetHL(value uint16) {
 }
 
 func (c *cpu) FlagZ() bool {
-	return c.F()&0x80 != 0
+	return c.F()&flagZ != 0
 }
 
 func (c *cpu) SetFlagZ(value bool) {
+	c.setFlag(value, flagZ)
+}
+
+func (c *cpu) FlagN() bool {
+	return c.F()&flagN != 0
+}
+
+func (c *cpu) SetFlagN(value bool) {
+	c.setFlag(value, flagN)
+}
+
+func (c *cpu) FlagH() bool {
+	return c.F()&flagH != 0
+}
+
+func (c *cpu) SetFlagH(value bool) {
+	c.setFlag(value, flagH)
+}
+
+func (c *cpu) FlagC() bool {
+	return c.F()&flagC != 0
+}
+
+func (c *cpu) SetFlagC(value bool) {
+	c.setFlag(value, flagC)
+}
+
+func (c *cpu) setFlag(value bool, flag uint8) {
 	if value {
-		c.SetF(c.F() | flagZ)
+		c.SetF(c.F() | flag)
 	} else {
-		c.SetF(c.F() &^ flagZ)
+		c.SetF(c.F() &^ flag)
 	}
 }
 
