@@ -37,6 +37,8 @@ type cpu struct {
 
 	sp uint16
 	pc uint16
+
+	bus *bus
 }
 
 func newCPU() *cpu {
@@ -51,6 +53,7 @@ func newCPU() *cpu {
 		l:  initL,
 		sp: initSP,
 		pc: initPC,
+		bus: newBus(),
 	}
 }
 
