@@ -37,9 +37,7 @@ jobs:
         uses: jdx/mise-action@v3
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
+        run: golangci-lint run
 
   format:
     runs-on: ubuntu-latest
