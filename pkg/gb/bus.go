@@ -24,23 +24,23 @@ func newBus() *bus {
 	}
 }
 
-func (b *bus) Read(addr uint16) uint8 {
+func (b *bus) Read(addr uint16) (uint8, error) {
 	switch {
 	case addr == 0xFFFF:
-		return b.ie
+		return b.ie, nil
 	case addr <= 0x7FFF:
-		return b.rom[addr]
+		return b.rom[addr], nil
 	case addr >= 0x8000 && addr <= 0x9FFF:
-		return b.vram[addr-0x8000]
+		return b.vram[addr-0x8000], nil
 	case addr >= 0xC000 && addr <= 0xDFFF:
-		return b.wram[addr-0xC000]
+		return b.wram[addr-0xC000], nil
 	case addr >= 0xE000 && addr <= 0xFDFF:
-		return b.wram[addr-0xE000]
+		return b.wram[addr-0xE000], nil
 	case addr >= 0xFF80 && addr <= 0xFFFE:
-		return b.hram[addr-0xFF80]
+		return b.hram[addr-0xFF80], nil
 	}
 
-	return 0xFF
+	return 0xFF, fmt.Errorf("invalid read address: 0x%04X", addr)
 }
 
 func (b *bus) Write(addr uint16, value uint8) error {

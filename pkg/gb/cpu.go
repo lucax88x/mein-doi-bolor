@@ -17,12 +17,20 @@ const (
 )
 
 const (
-	lowByteMask = 0xFF // Mask for extracting the low byte of a 16-bit value
-	flagMask    = 0xF0 // F register lower 4 bits are always 0
-	flagZ       = 0x80 // Zero flag (bit 7)
-	flagN       = 0x40 // Subtract flag (bit 6)
-	flagH       = 0x20 // Half Carry flag (bit 5)
-	flagC       = 0x10 // Carry flag (bit 4)
+	lowByteMask    = 0xFF // Mask for extracting the low byte of a 16-bit value
+	flagMask       = 0xF0 // F register lower 4 bits are always 0
+	flagZ          = 0x80 // Zero flag (bit 7)
+	flagN          = 0x40 // Subtract flag (bit 6)
+	flagH          = 0x20 // Half Carry flag (bit 5)
+	flagC          = 0x10 // Carry flag (bit 4)
+	opCode_NOP     = 0x00
+	opCode_LD_B_nr = 0x06
+	opCode_LD_C_nr = 0x0E
+	opCode_LD_D_nr = 0x16
+	opCode_LD_E_nr = 0x1E
+	opCode_LD_H_nr = 0x26
+	opCode_LD_L_nr = 0x2E
+	opCode_LD_A_nr = 0x3E
 )
 
 type cpu struct {
@@ -35,25 +43,28 @@ type cpu struct {
 	h uint8
 	l uint8
 
-	sp uint16
-	pc uint16
+	sp uint16 // stack pointer
+	pc uint16 // program counter
+
+	cycles int
 
 	bus *bus
 }
 
 func newCPU() *cpu {
 	return &cpu{
-		a:  initA,
-		f:  initF,
-		b:  initB,
-		c:  initC,
-		d:  initD,
-		e:  initE,
-		h:  initH,
-		l:  initL,
-		sp: initSP,
-		pc: initPC,
-		bus: newBus(),
+		a:      initA,
+		f:      initF,
+		b:      initB,
+		c:      initC,
+		d:      initD,
+		e:      initE,
+		h:      initH,
+		l:      initL,
+		sp:     initSP,
+		pc:     initPC,
+		cycles: 0,
+		bus:    newBus(),
 	}
 }
 
@@ -217,6 +228,144 @@ func (c *cpu) setFlag(value bool, flag uint8) {
 	}
 }
 
+func (c *cpu) fetch() (uint8, error) {
+	val, err := c.bus.Read(c.PC())
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetPC(c.PC() + 0x01)
+
+	return val, nil
+}
+
+func (c *cpu) exec_LD_B_nr() (int, error) {
+	immediateValue, err := c.fetch()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetB(immediateValue)
+
+	return 8, nil
+}
+
+func (c *cpu) exec_LD_C_nr() (int, error) {
+	immediateValue, err := c.fetch()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetC(immediateValue)
+
+	return 8, nil
+}
+
+func (c *cpu) exec_LD_D_nr() (int, error) {
+	immediateValue, err := c.fetch()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetD(immediateValue)
+
+	return 8, nil
+}
+
+func (c *cpu) exec_LD_E_nr() (int, error) {
+	immediateValue, err := c.fetch()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetE(immediateValue)
+
+	return 8, nil
+}
+
+func (c *cpu) exec_LD_H_nr() (int, error) {
+	immediateValue, err := c.fetch()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetH(immediateValue)
+
+	return 8, nil
+}
+
+func (c *cpu) exec_LD_L_nr() (int, error) {
+	immediateValue, err := c.fetch()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetL(immediateValue)
+
+	return 8, nil
+}
+
+func (c *cpu) exec_LD_A_nr() (int, error) {
+	immediateValue, err := c.fetch()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to read immediate value at PC+1: %v", err)
+	}
+
+	c.SetA(immediateValue)
+
+	return 8, nil
+}
+
+func (c *cpu) exec(opCode uint8) (int, error) {
+	switch opCode {
+	case opCode_NOP:
+		return 4, nil
+	case opCode_LD_B_nr:
+		return c.exec_LD_B_nr()
+	case opCode_LD_C_nr:
+		return c.exec_LD_C_nr()
+	case opCode_LD_D_nr:
+		return c.exec_LD_D_nr()
+	case opCode_LD_E_nr:
+		return c.exec_LD_E_nr()
+	case opCode_LD_H_nr:
+		return c.exec_LD_H_nr()
+	case opCode_LD_L_nr:
+		return c.exec_LD_L_nr()
+	case opCode_LD_A_nr:
+		return c.exec_LD_A_nr()
+	default:
+		return 0, fmt.Errorf("unimplemented opcode: 0x%02X", opCode)
+	}
+}
+
 func debug(v uint) {
-	fmt.Printf("0x%X\n", v)
+	// fmt.Printf("0x%X\n", v)
+	// fmt.Printf("0x%02X\n", v) // 8-bit:  0x0f, 0xff
+	fmt.Printf("0x%04X\n", v) // 16-bit: 0x0100, 0xffff
+}
+
+func (c *cpu) Step() (int, error) {
+	opCode, err := c.fetch()
+
+	if err != nil {
+		return c.cycles, fmt.Errorf("failed to read opcode at PC: %v", err)
+	}
+
+	cycles, err := c.exec(opCode)
+	c.cycles = cycles
+
+	if err != nil {
+		return c.cycles, fmt.Errorf("failed to read opcode at PC: %v", err)
+	}
+
+	return c.cycles, nil
 }

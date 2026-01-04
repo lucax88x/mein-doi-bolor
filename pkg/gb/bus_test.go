@@ -3,12 +3,12 @@ package gb
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBus_NewBus(t *testing.T) {
 	bus := newBus()
-	assert.NotNil(t, bus)
+	require.NotNil(t, bus)
 }
 
 func TestBus_ReadWrite_WRAM(t *testing.T) {
@@ -27,7 +27,8 @@ func TestBus_ReadWrite_WRAM(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bus := newBus()
 			bus.Write(tt.addr, tt.value)
-			assert.Equal(t, tt.value, bus.Read(tt.addr))
+			value, _ := bus.Read(tt.addr)
+			require.Equal(t, tt.value, value)
 		})
 	}
 }
@@ -48,7 +49,8 @@ func TestBus_ReadWrite_HRAM(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bus := newBus()
 			bus.Write(tt.addr, tt.value)
-			assert.Equal(t, tt.value, bus.Read(tt.addr))
+			value, _ := bus.Read(tt.addr)
+			require.Equal(t, tt.value, value)
 		})
 	}
 }
@@ -69,7 +71,8 @@ func TestBus_ReadWrite_VRAM(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bus := newBus()
 			bus.Write(tt.addr, tt.value)
-			assert.Equal(t, tt.value, bus.Read(tt.addr))
+			value, _ := bus.Read(tt.addr)
+			require.Equal(t, tt.value, value)
 		})
 	}
 }
@@ -80,12 +83,16 @@ func TestBus_LoadROM(t *testing.T) {
 
 	err := bus.LoadROM(rom)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
-	assert.Equal(t, uint8(0x00), bus.Read(0x0000))
-	assert.Equal(t, uint8(0xC3), bus.Read(0x0001))
-	assert.Equal(t, uint8(0x50), bus.Read(0x0002))
-	assert.Equal(t, uint8(0x01), bus.Read(0x0003))
+	value, _ := bus.Read(0x0000)
+	require.Equal(t, uint8(0x00), value)
+	value, _ = bus.Read(0x0001)
+	require.Equal(t, uint8(0xC3), value)
+	value, _ = bus.Read(0x0002)
+	require.Equal(t, uint8(0x50), value)
+	value, _ = bus.Read(0x0003)
+	require.Equal(t, uint8(0x01), value)
 }
 
 func TestBus_LoadROM_TooBig_Gives_Error(t *testing.T) {
@@ -94,7 +101,7 @@ func TestBus_LoadROM_TooBig_Gives_Error(t *testing.T) {
 
 	err := bus.LoadROM(rom)
 
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestBus_ROM_IsReadOnly(t *testing.T) {
@@ -107,10 +114,11 @@ func TestBus_ROM_IsReadOnly(t *testing.T) {
 	err := bus.Write(0x0000, 0xFF)
 
 	// Has error
-	assert.Error(t, err, "should not write to ROM")
+	require.Error(t, err, "should not write to ROM")
 
 	// Value should remain unchanged
-	assert.Equal(t, uint8(0x42), bus.Read(0x0000))
+	value, _ := bus.Read(0x0000)
+	require.Equal(t, uint8(0x42), value)
 }
 
 func TestBus_EchoRAM(t *testing.T) {
@@ -122,12 +130,15 @@ func TestBus_EchoRAM(t *testing.T) {
 	bus.Write(0xC123, 0xAB)
 
 	// Should be readable from Echo RAM
-	assert.Equal(t, uint8(0x42), bus.Read(0xE000))
-	assert.Equal(t, uint8(0xAB), bus.Read(0xE123))
+	value, _ := bus.Read(0xE000)
+	require.Equal(t, uint8(0x42), value)
+	value, _ = bus.Read(0xE123)
+	require.Equal(t, uint8(0xAB), value)
 
 	// Write to Echo RAM should affect WRAM
 	bus.Write(0xE456, 0xCD)
-	assert.Equal(t, uint8(0xCD), bus.Read(0xC456))
+	value, _ = bus.Read(0xC456)
+	require.Equal(t, uint8(0xCD), value)
 }
 
 func TestBus_IERegister(t *testing.T) {
@@ -135,5 +146,6 @@ func TestBus_IERegister(t *testing.T) {
 	bus := newBus()
 
 	bus.Write(0xFFFF, 0x1F)
-	assert.Equal(t, uint8(0x1F), bus.Read(0xFFFF))
+	value, _ := bus.Read(0xFFFF)
+	require.Equal(t, uint8(0x1F), value)
 }
